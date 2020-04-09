@@ -36,7 +36,7 @@ class   CurrentWeatherFragment : Fragment() {
         val apiService =  WeatherStackApiService()
 
         CoroutineScope(Dispatchers.Main).launch {
-            val currentWeatherResponse = apiService.getCurrentWeather("London")
+            val currentWeatherResponse = apiService.getCurrentWeather("Boston", "f")
             textView.text = currentWeatherResponse.toString()
             Log.e("TAG", "the temperature is ${currentWeatherResponse}")
         }

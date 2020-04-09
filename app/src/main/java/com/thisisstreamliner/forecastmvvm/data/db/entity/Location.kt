@@ -1,4 +1,4 @@
-package com.thisisstreamliner.forecastmvvm.data.response
+package com.thisisstreamliner.forecastmvvm.data.db.entity
 
 
 import com.google.gson.annotations.SerializedName

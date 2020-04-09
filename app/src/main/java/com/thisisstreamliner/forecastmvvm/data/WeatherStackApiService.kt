@@ -1,9 +1,8 @@
 package com.thisisstreamliner.forecastmvvm.data
 
-import com.thisisstreamliner.forecastmvvm.data.response.CurrentWeatherResponse
+import com.thisisstreamliner.forecastmvvm.data.remote.response.CurrentWeatherResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
-import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -18,7 +17,7 @@ const val BASE_URL = "http://api.weatherstack.com/"
 interface WeatherStackApiService {
 
     @GET("current")
-    suspend fun getCurrentWeather(@Query("query")city: String) : CurrentWeatherResponse
+    suspend fun getCurrentWeather(@Query("query")city: String, @Query("units") metric : String) : CurrentWeatherResponse
 
     companion object {
         operator fun invoke() : WeatherStackApiService {
@@ -27,6 +26,7 @@ interface WeatherStackApiService {
                       .url()
                       .newBuilder()
                       .addQueryParameter("access_key", API_KEY)
+                      //.addQueryParameter("language", "uk")
                       .build()
                   val request = chain.request()
                       .newBuilder()
