@@ -6,10 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
 import com.thisisstreamliner.forecastmvvm.R
 import com.thisisstreamliner.forecastmvvm.data.WeatherStackApiService
+import com.thisisstreamliner.forecastmvvm.data.remote.ConnectivityInterceptorImpl
+import com.thisisstreamliner.forecastmvvm.data.remote.WeatherNetworkDataSourceImpl
 import kotlinx.android.synthetic.main.current_weather_fragment.*
 import kotlinx.coroutines.*
 
@@ -33,12 +36,16 @@ class   CurrentWeatherFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(CurrentWeatherViewModel::class.java)
         // TODO: Use the ViewModel
-        val apiService =  WeatherStackApiService()
+        val apiService =  WeatherStackApiService(ConnectivityInterceptorImpl(this.context!!))
+        val weatherNetworkDataSource = WeatherNetworkDataSourceImpl(apiService)
+
+        weatherNetworkDataSource.downloadedCurrentWeather.observe(this, Observer {
+            textView.text = it.toString()
+            Log.e("TAG", "the temperature is ${it}")
+        })
 
         CoroutineScope(Dispatchers.Main).launch {
-            val currentWeatherResponse = apiService.getCurrentWeather("Boston", "f")
-            textView.text = currentWeatherResponse.toString()
-            Log.e("TAG", "the temperature is ${currentWeatherResponse}")
+            weatherNetworkDataSource.fetchCurrentWeather("London")
         }
 
     }

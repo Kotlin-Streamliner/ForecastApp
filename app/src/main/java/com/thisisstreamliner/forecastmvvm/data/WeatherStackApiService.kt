@@ -1,5 +1,6 @@
 package com.thisisstreamliner.forecastmvvm.data
 
+import com.thisisstreamliner.forecastmvvm.data.remote.ConnectivityInterceptor
 import com.thisisstreamliner.forecastmvvm.data.remote.response.CurrentWeatherResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -20,7 +21,7 @@ interface WeatherStackApiService {
     suspend fun getCurrentWeather(@Query("query")city: String, @Query("units") metric : String) : CurrentWeatherResponse
 
     companion object {
-        operator fun invoke() : WeatherStackApiService {
+        operator fun invoke(connectivityInterceptor: ConnectivityInterceptor) : WeatherStackApiService {
              val requestInterceptor = Interceptor {chain ->
                   val url = chain.request()
                       .url()
@@ -34,7 +35,10 @@ interface WeatherStackApiService {
                       .build()
                  return@Interceptor chain.proceed(request)
              }
-             val okHttpClient = OkHttpClient.Builder().addInterceptor(requestInterceptor).build()
+             val okHttpClient = OkHttpClient.Builder()
+                 .addInterceptor(requestInterceptor)
+                 .addInterceptor(connectivityInterceptor)
+                 .build()
 
             return  Retrofit.Builder()
                 .client(okHttpClient)
