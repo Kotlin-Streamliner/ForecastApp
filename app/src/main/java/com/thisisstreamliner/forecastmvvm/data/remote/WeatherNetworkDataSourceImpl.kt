@@ -20,13 +20,16 @@ class WeatherNetworkDataSourceImpl(
         get() = _downloadedCurrentWeather
 
     override suspend fun fetchCurrentWeather(location: String) {
-        try {
-            CoroutineScope(Dispatchers.IO).launch {
-                val fetchedCurrentWeather = weatherStackApiService.getCurrentWeather(location, "f")
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val fetchedCurrentWeather =
+                    weatherStackApiService.getCurrentWeather(location, "f")
                 _downloadedCurrentWeather.postValue(fetchedCurrentWeather)
+            } catch (e: NoConnectivityException) {
+                Log.e("Connectivity", "No internet connection .", e)
+            } catch (e: Exception) {
+                Log.e("BaseException", "Exception basic", e)
             }
-        } catch (e: NoConnectivityException) {
-            Log.e("Connectivity", "No internet connection .", e)
         }
     }
 }
